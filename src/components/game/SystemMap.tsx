@@ -28,8 +28,23 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
   const system = useMemo(() => generateSystem(seed, systemIndex), [seed, systemIndex]);
   const [selected, setSelected] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const discoveredSet = useMemo(() => new Set(discovered), [discovered]);
+  // Keep discoveries in local state so a successful landing updates this screen immediately.
+  const [discoveredIds, setDiscoveredIds] = useState<string[]>(discovered);
+  const [firstFoundState, setFirstFoundState] = useState(firstFound);
+  const discoveredSet = useMemo(() => new Set(discoveredIds), [discoveredIds]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    setDiscoveredIds((current) => {
+      const next = new Set(current);
+      for (const id of discovered) next.add(id);
+      return [...next];
+    });
+  }, [discovered]);
+
+  useEffect(() => {
+    setFirstFoundState(firstFound);
+  }, [firstFound]);
 
   // My rocket sits on the orbit of the selected planet (or parked near the star).
   const posRef = useRef({ x: 0, y: 0, facing: 1 });
@@ -189,9 +204,19 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
     }
     const data = (await res.json()) as { points_awarded: number; newly_discovered: boolean; first_find: boolean };
     if (data.newly_discovered) {
+      // Optimistically update the map before navigation/refresh so the discovery is
+      // reflected immediately when this view remains mounted or is revisited.
+      setDiscoveredIds((current) => current.includes(sel.id) ? current : [...current, sel.id]);
+      if (data.first_find) {
+        setFirstFoundState((current) => ({
+          ...current,
+          [sel.id]: { username, at: new Date().toISOString() },
+        }));
+      }
       sfx('found');
       toast({ head: `${COPY.planetFound.head} +${data.points_awarded}`, sub: data.first_find ? 'Nobody had logged this world before you.' : COPY.planetFound.sub, tone: 'ok' });
     }
+    router.refresh();
     router.push(`/planet/${idToSlug(sel.id)}`);
   }
 
@@ -251,8 +276,8 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
               ) : (
                 <p className="small dim" style={{ margin: 0 }}>Orbit scan shows a world with {sel.sites.length} points of interest and {sel.nodes.length} resource readings. Land to find out what it is.</p>
               )}
-              {firstFound[sel.id] ? (
-                <p className="small muted" style={{ margin: 0 }}>First discovered by <span className="amber">{firstFound[sel.id].username}</span> on {new Date(firstFound[sel.id].at).toLocaleDateString()}.</p>
+              {firstFoundState[sel.id] ? (
+                <p className="small muted" style={{ margin: 0 }}>First discovered by <span className="amber">{firstFoundState[sel.id].username}</span> on {new Date(firstFoundState[sel.id].at).toLocaleDateString()}.</p>
               ) : (
                 <p className="small muted" style={{ margin: 0 }}>Nobody has logged this planet yet.</p>
               )}
