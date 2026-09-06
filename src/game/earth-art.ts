@@ -1,0 +1,82 @@
+import { OFFICIAL } from './palette';
+
+/**
+ * Earth, 62 x 62, from the supplied pixel artwork (hero status). Extracted cell-for-cell from the
+ * source image and re-mapped onto the official colour system: oceans Baltic Blue, deep water and
+ * shadow Regal Navy, cloud Icy Blue, land Emerald with Light Green where the sun hits (47.3).
+ * Glyph characters: o ocean, d deep water, c cloud, g land, l sunlit land, . transparent.
+ */
+export const EARTH_ART_ROWS: readonly string[] = [
+  '..........................oooooooooo..........................',
+  '......................oooooooooooooooooo......................',
+  '...................oooooooooooooooooooooooo...................',
+  '.................oooooooooooooooggooooooooooo.................',
+  '...............ooooooooooggggggggggggggoooooooo...............',
+  '..............oooooooogggggggggggllllggggooooooo..............',
+  '.............ooooooggggllggggllllllllllgggoogggoo.............',
+  '...........ooooooogccllllggglllllllllllgggggggggooo...........',
+  '..........ooococggglcccclgglllllllcclllllggggggggooo..........',
+  '.........oooccccllllccccccllllccccccclllllgggggggggoo.........',
+  '........oooogccllllllccccccccccccccccclllglgggggggggoo........',
+  '.......ddoocccccllllllllcclcccclgllllllllllgggggggggooo.......',
+  '.......ddooggcgccllllllllllclccccclllgllglglgggggggooog.......',
+  '......dddoogggogollllllllllllllllllllllglgggggggggogoogg......',
+  '.....ddooogggoooggllllgggglllllllllllgglggggggggggooooogg.....',
+  '....ddooooogooooglglllggggglllllllllllgggggggggggogocccggg....',
+  '....dddoooooogoggglgglggggglglllllllllggggggggggcccccccogg....',
+  '...ddddoooooggcggggglggggoggglgllllllllgggggcgccccccccogggg...',
+  '...ddddddoooggggggggggggooooggllllllccccgcccgccccccccoooggg...',
+  '..ccddgggggoggggggggggocccoooggllllcllggggggggcccooooooooggg..',
+  '..ccgggggggooggggggggoccccccggglllllggggoggggggooooooooooggg..',
+  '..cccgggggggogggggggccccoocccgglllllgggooogggggooooooooooggg..',
+  '.lccccggggggdogggggccccooocccoglllllggooooggggggooooooooggggg.',
+  '.lcggcccllccdddgggcccggdooooccgglllggggooooggggggooooooooggoo.',
+  '.lccggcccllggdddggccgggccccoccogglgggooooooogggggooooooooogoo.',
+  '.lllggglclclgdddddccggdcocooocoggggggoooooooooggooooooooooooo.',
+  'lllggggllllllgddddccdddcdoooocoogggggoooooooooooooooooooocoooo',
+  'llgggggllllllgggddccdddccoooccooggggooooooooooooooooooooocoooo',
+  'llggggggllllllggddcccoooocccoooooggggooooooooooooooooooooooooo',
+  'llggggggggglllgggggcccoooooooooooogooooooooooooooooooooooooodo',
+  'llgggggggggglllgggggccccoooooooooooooooooooooooodoooooooooodod',
+  'lllgglccccgggggggggggcccccoooooooooooooooooooodccdoccooooododd',
+  'lllggccgggcggggggggggccccccoooooooooooooooooodccddcoooooddoodd',
+  'llllcclgcgccggggggggdococccccccooooccooooooodccccdooooodoododd',
+  'llllclllgccggggggggdodoccocccccccccccoccoodccccccooooccodooddd',
+  'llllccllllggggggggdddodocccocccccccccccdccccccccdooocccdoddddd',
+  '.llllccclllggggggdododddoooccccccccccccccccccdccooooooddddddd.',
+  '.llllllcclggggggdodododoooooooooooccccccccccccddooocooodddddd.',
+  '.lllllllcccgccccddggddodoooooooooooooccccccccdddcocoooodddddd.',
+  '.llllllllcccccccccggggdodoooooocoooooddcccccdddcccooooddddddd.',
+  '..llllllllgccccddddgggddooooooccccooodcccccdddoccooggddddddd..',
+  '..lllllllllggddddddggggddoooooocccccocccdddcdcccogglggdddddd..',
+  '..lllllllllggcdcccddggggdooooooooocccccccdcccccogllglggddddd..',
+  '...lllllllllggdddccdggggddoooooooooccoocooocococllllgggdddd...',
+  '...llllllllllggddddgggggddooooooooooooooooocooglllllgggdddd...',
+  '....lllllllllgggdddgggggddoooooooooooooooocccggllllggggddd....',
+  '....lllllllllgggdddgggggdddoooooooooooooooooogllllllggdddd....',
+  '.....lllllllllgdddgggggdddodooooooooooooooccclccllgggdddd.....',
+  '......llllllllgdddgggggddddodoooooooooooccccccclglggdddd......',
+  '.......llllllggdddggddddddddodoooooooooccccccglglggdddd.......',
+  '.......llllllggdddgdddddddddddooooooooooccgcccccgggdddd.......',
+  '........lllllgggdddddddddddddddooooooooocccgggcgggdddd........',
+  '.........lllggccgdcdccddddddddodododododogggggddddddd.........',
+  '..........llgggccccccdccdddddddddododododddddddddddd..........',
+  '...........lggggcccdddddddddddddddddddddddddddddddd...........',
+  '.............ggdddccddddddddddddddddddddddddddddd.............',
+  '..............gddddddddddddddddcdccddddddddddddd..............',
+  '...............dddddddddddddddddddcccdddddddddd...............',
+  '.................dddddddddddddddddddddddddddd.................',
+  '...................ddddddddddddddddddddddddd..................',
+  '......................dddddddddddddddddd......................',
+  '..........................dddddddddd..........................',
+];
+
+export const EARTH_ART_MAP: Record<string, string> = {
+  o: OFFICIAL.balticBlue,
+  d: OFFICIAL.regalNavy,
+  c: OFFICIAL.icyBlue,
+  g: OFFICIAL.emerald,
+  l: OFFICIAL.lightGreen,
+};
+
+export const EARTH_ART_SIZE = 62;

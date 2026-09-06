@@ -1,0 +1,183 @@
+/* Reusable pixel UI primitives. Colours come from the semantic tokens in globals.css (47.21). */
+
+/* ---------- buttons: rectangular, pixel-cut, hard shadow, no pills */
+.btn {
+  --btn-bg: var(--button-secondary-bg);
+  --btn-fg: var(--button-secondary-text);
+  --btn-line: var(--color-border);
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.6em;
+  min-height: 44px; padding: 0.55rem 1.1rem;
+  font-family: var(--font-display); font-weight: 500; font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; line-height: 1.3;
+  color: var(--btn-fg); background: var(--btn-bg);
+  border: 2px solid var(--btn-line); border-radius: 0; text-decoration: none; cursor: pointer;
+  box-shadow: 3px 3px 0 0 var(--color-bg-primary);
+  transition: transform 0.08s steps(2), box-shadow 0.08s steps(2), background-color 0.12s;
+  user-select: none; white-space: nowrap;
+}
+.btn:hover { background: var(--button-secondary-hover); color: var(--color-text-primary); }
+.btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 var(--color-bg-primary); }
+/* disabled: dimmed and greyed, plus the not-allowed cursor and aria state (never colour alone) */
+.btn:disabled, .btn[aria-disabled='true'] { cursor: not-allowed; transform: none; box-shadow: 3px 3px 0 0 var(--color-bg-primary); }
+.btn:disabled:not(.btn-busy), .btn[aria-disabled='true'] { background: var(--button-disabled-bg); color: var(--button-disabled-text); border-color: var(--color-border); text-shadow: none; }
+.btn-busy:disabled { opacity: 0.75; } /* a working button keeps its own colour, dimmed, with the pulsing square */
+/* primary: Enter the universe, Save changes, Launch, Confirm, Continue */
+.btn-primary { --btn-bg: var(--button-primary-bg); --btn-fg: var(--button-primary-text); --btn-line: var(--button-primary-line); text-shadow: 1px 1px 0 var(--button-primary-line); }
+.btn-primary:hover { background: var(--button-primary-hover); color: var(--button-primary-text); text-shadow: none; }
+.btn-primary:active { background: var(--color-primary-active); }
+/* secondary: How it works, Back, Cancel, View details */
+.btn-secondary { --btn-bg: var(--button-secondary-bg); --btn-fg: var(--button-secondary-text); --btn-line: var(--color-border); }
+.btn-secondary:hover { background: var(--button-secondary-hover); color: var(--color-text-primary); border-color: var(--color-border); }
+.btn-ghost { --btn-bg: transparent; --btn-fg: var(--color-text-primary); --btn-line: var(--color-border); box-shadow: none; }
+.btn-ghost:hover { background: var(--button-secondary-hover); color: var(--color-text-primary); }
+.btn-ghost:active { box-shadow: none; }
+/* danger: only genuinely destructive actions (delete account, log out and lose a guest session) */
+.btn-danger { --btn-bg: var(--button-danger-bg); --btn-fg: var(--button-danger-text); --btn-line: var(--color-bg-deep); }
+.btn-danger:hover { background: var(--button-danger-hover); color: var(--button-danger-text); }
+/* positive: accepting something (a friend request); Prussian Blue 3 text keeps 8.7:1 on Emerald */
+.btn-green { --btn-bg: var(--color-success); --btn-fg: var(--color-bg-deep); --btn-line: var(--color-bg-deep); }
+.btn-green:hover { background: var(--color-accent-mint); color: var(--color-bg-deep); }
+.btn-sm { min-height: 36px; padding: 0.35rem 0.75rem; font-size: 0.85rem; }
+.btn-lg { min-height: 52px; padding: 0.75rem 1.5rem; font-size: 1.15rem; }
+.btn-block { width: 100%; }
+.btn .btn-icon { width: 14px; height: 14px; flex: none; }
+.btn-busy::after {
+  content: ''; width: 8px; height: 8px; margin-left: 2px; background: currentColor;
+  animation: pulse-soft 0.8s steps(2) infinite;
+}
+
+/* ---------- panels */
+.panel {
+  position: relative;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  box-shadow: 4px 4px 0 0 var(--color-bg-primary);
+  padding: 1.25rem;
+}
+.panel-raised { background: var(--color-surface-dark); }
+.panel-dark { background: var(--color-bg-primary); }
+.panel-tight { padding: 0.85rem 1rem; }
+.panel-title {
+  font-family: var(--font-display); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--color-primary-soft); margin: 0 0 0.85rem; display: flex; align-items: center; gap: 0.6rem;
+}
+.panel-title::after { content: ''; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--color-border) 0 4px, transparent 4px 8px); }
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+
+/* ---------- tags (rectangular, not pills). Every tag carries its meaning as text. */
+.tag {
+  display: inline-block; padding: 0.15rem 0.45rem; border: 2px solid var(--color-border);
+  font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.6;
+  color: var(--color-text-support); background: var(--color-bg-inset); vertical-align: middle;
+}
+.tag-neutral { border-color: var(--color-border); } /* plain labels (type, state): no rarity meaning */
+.tag-common { border-color: var(--discovery-common); color: var(--color-text-secondary); }
+.tag-uncommon { border-color: var(--discovery-uncommon); color: var(--color-text-secondary); }
+.tag-rare { border-color: var(--discovery-rare); color: var(--discovery-rare); }
+.tag-exotic { border-color: var(--discovery-exceptional); color: var(--discovery-exceptional); }
+.tag-player { border-color: var(--color-accent-warm); color: var(--color-accent-warm); }
+.tag-system { border-color: var(--color-border-active); color: var(--color-primary-soft); }
+.tag-proc { border-color: var(--color-border); color: var(--color-text-support); }
+.tag-ok { border-color: var(--color-success); color: var(--color-success); }
+.tag-warn { border-color: var(--color-warning); color: var(--color-warning); }
+.tag-first { border-color: var(--color-accent-gold); color: var(--color-accent-gold); }
+.tag-guest { border-color: var(--color-primary-soft); color: var(--color-text-secondary); } /* session state: cool, structural, not a reward */
+
+/* ---------- stat blocks */
+.stat { display: grid; gap: 0.25rem; padding: 0.85rem 1rem; background: var(--color-bg-inset); border: 2px solid var(--color-border-subtle); }
+.stat dt { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-muted); }
+.stat dd { margin: 0; font-family: var(--font-display); font-size: 1.5rem; color: var(--color-text-primary); line-height: 1.2; font-variant-numeric: tabular-nums; }
+.stat dd small { font-size: 0.8rem; color: var(--color-text-support); }
+.stats { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin: 0; }
+
+/* ---------- toast: tone is the left rule plus the heading text */
+.toast-region { position: fixed; z-index: 90; right: 1rem; bottom: 1rem; display: grid; gap: 0.5rem; width: min(360px, calc(100vw - 2rem)); pointer-events: none; }
+.toast {
+  pointer-events: auto; background: var(--color-surface-dark); border: 2px solid var(--color-border); border-left: 6px solid var(--color-primary-soft);
+  box-shadow: 4px 4px 0 0 var(--color-bg-primary); padding: 0.75rem 0.9rem; animation: rise 0.25s ease both;
+}
+.toast-ok { border-left-color: var(--color-success); }
+.toast-warn { border-left-color: var(--color-warning); }
+.toast-err { border-left-color: var(--color-danger); }
+.toast-head { font-family: var(--font-display); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; color: var(--color-text-primary); }
+.toast-sub { font-size: 0.9rem; color: var(--color-text-support); }
+
+/* ---------- modal */
+.modal-backdrop { position: fixed; inset: 0; z-index: 80; background: rgba(0, 18, 51, 0.84); display: grid; place-items: center; padding: 1rem; } /* --color-overlay at 84% */
+.modal { width: min(520px, 100%); background: var(--color-bg-secondary); border: 2px solid var(--color-border); box-shadow: 6px 6px 0 0 var(--color-bg-primary); padding: 1.5rem; animation: rise 0.2s ease both; }
+.modal h2 { font-size: 1.35rem; }
+.modal-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.25rem; justify-content: flex-end; }
+
+/* ---------- empty state */
+.empty { text-align: center; padding: 2.5rem 1rem; border: 2px dashed var(--color-border); }
+.empty .display-sm { color: var(--color-text-secondary); margin-bottom: 0.4rem; }
+.empty p { margin-inline: auto; color: var(--color-text-support); }
+
+/* ---------- notice: attention (warning), critical (danger) or information (primary) */
+.notice { border: 2px solid var(--color-warning); background: rgba(226, 115, 150, 0.06); padding: 1rem 1.25rem; }
+.notice-red { border-color: var(--color-danger); background: rgba(217, 86, 74, 0.1); }
+.notice-blue { border-color: var(--color-primary); background: rgba(4, 102, 200, 0.14); }
+.notice .display-sm { margin-bottom: 0.4rem; }
+
+/* ---------- dialogue box (in-game messages) */
+.dialogue {
+  background: var(--color-bg-primary); border: 3px double var(--color-primary-soft); padding: 0.9rem 1.1rem; color: var(--color-text-secondary);
+}
+.dialogue-head { font-family: var(--font-display); font-size: 1rem; text-transform: uppercase; margin-bottom: 0.3rem; }
+.dialogue-sub { color: var(--color-text-support); }
+
+/* ---------- key list */
+.keys { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; font-size: 0.85rem; color: var(--color-text-support); }
+.keys span { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+/* ---------- segmented option list (rocket builder, settings): selected = Cerulean fill + Icy Blue border + aria state */
+.opts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.opt {
+  min-height: 40px; padding: 0.4rem 0.75rem; font: inherit; font-size: 0.9rem; color: var(--color-text-support);
+  background: var(--color-bg-inset); border: 2px solid var(--color-border); cursor: pointer; border-radius: 0; text-align: left;
+}
+.opt:hover { color: var(--color-text-primary); background: var(--color-bg-tertiary); }
+.opt[aria-pressed='true'], .opt[aria-checked='true'] { color: var(--control-selected-text); background: var(--control-selected-bg); border-color: var(--control-selected-border); }
+.opt:disabled { color: var(--color-text-disabled); cursor: not-allowed; }
+.opt-swatch { display: inline-block; width: 14px; height: 14px; margin-right: 0.5rem; vertical-align: -2px; border: 2px solid var(--color-bg-primary); }
+
+/* ---------- inline loading line */
+.loading-line { font-family: var(--font-display); font-size: 0.95rem; text-transform: uppercase; color: var(--color-text-support); }
+
+/* ---------- loading screen: one word, nothing else */
+.loading-screen { display: grid; place-items: center; min-height: min(60dvh, 520px); padding: 2rem 1rem; }
+.loading-compact { min-height: 0; padding: 0.5rem 0; }
+.loading-word { margin: 0; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-secondary); }
+.loading-compact .loading-word { font-size: 1rem; }
+
+/* ---------- swatches (section 45): rectangular, labelled, keyboard reachable */
+.swatches { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.swatch {
+  display: inline-grid; grid-template-columns: 18px auto; align-items: center; gap: 0.45rem;
+  min-height: 36px; padding: 0.25rem 0.55rem 0.25rem 0.35rem; font: inherit; font-size: 0.8rem; color: var(--color-text-support);
+  background: var(--color-bg-inset); border: 2px solid var(--color-border); cursor: pointer; border-radius: 0;
+}
+.swatch i { display: block; width: 18px; height: 18px; border: 2px solid var(--color-bg-primary); box-shadow: inset -3px -3px 0 0 rgba(13, 27, 42, 0.35); }
+.swatch:hover { border-color: var(--color-primary-soft); color: var(--color-text-primary); }
+.swatch[aria-checked='true'] { border-color: var(--control-selected-border); color: var(--control-selected-text); background: var(--control-selected-bg); box-shadow: 2px 2px 0 0 var(--color-bg-primary); }
+.swatch[aria-checked='true'] i { outline: 2px solid var(--control-selected-text); outline-offset: 1px; }
+
+/* pixel-framed tabs (no pills) */
+.ptabs { display: inline-flex; border: 2px solid var(--color-border); background: var(--color-bg-secondary); }
+.ptab { min-height: 40px; padding: 0.4rem 1rem; font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-support); background: transparent; border: 0; border-right: 2px solid var(--color-border); cursor: pointer; border-radius: 0; }
+.ptab:last-child { border-right: 0; }
+.ptab:hover { color: var(--color-text-primary); background: var(--color-bg-inset); }
+.ptab[aria-selected='true'] { color: var(--control-selected-text); background: var(--control-selected-bg); }
+
+/* customization layout (section 45.1) */
+.custom { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr) minmax(320px, 460px); align-items: start; }
+.custom-controls { display: grid; gap: 1.5rem; }
+.custom-preview { position: sticky; top: calc(var(--nav-h) + 1rem); display: grid; gap: 0.75rem; }
+.custom-stage { position: relative; background: var(--color-bg-primary); border: 2px solid var(--color-border); box-shadow: 4px 4px 0 0 var(--color-bg-primary); overflow: hidden; }
+.custom-stage canvas { display: block; width: 100%; height: auto; }
+.custom-group { display: grid; gap: 0.5rem; }
+.custom-group h3 { margin: 0; font-size: 0.9rem; color: var(--color-primary-soft); }
+@media (max-width: 900px) {
+  .custom { grid-template-columns: 1fr; }
+  .custom-preview { position: static; order: -1; }
+}

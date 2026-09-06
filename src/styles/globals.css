@@ -1,0 +1,303 @@
+/* JUST NEED SOME SPACE. : design tokens and base styles.
+   OFFICIAL WEBSITE COLOUR SYSTEM (spec 47) in two layers (47.21):
+     RAW PALETTE      src/game/palette.ts `OFFICIAL` (the approved hexes, the single source of truth)
+     SEMANTIC TOKENS  the custom properties below. Same names and values as `SEMANTIC` in palette.ts;
+                      the guard test keeps the two in step.
+   Components consume semantic tokens (var(--color-bg-primary), never #0d1b2a). No raw hex outside
+   this block. Hierarchy (47.8): deep navy and blue first, celestial blue / cyan / teal / ocean for
+   interaction and exploration, environmental colours inside planets, pink / coral / cream only where
+   something is unusual or important. Blue is space, teal is life, cyan is discovery, warm is energy,
+   pastel is strangeness (47.15). No neon, no purple dominance, no gradients, no pills. */
+
+:root {
+  /* ---- 47.21 core semantic tokens ------------------------------------------------ */
+  /* Backgrounds */
+  --color-bg-primary: #0d1b2a;      /* INK BLACK: main website and game background */
+  --color-bg-secondary: #1b263b;    /* PRUSSIAN BLUE: sections, cards, panels, HUD containers */
+  --color-bg-tertiary: #415a77;     /* DUSK BLUE: hover surface of structural controls */
+  --color-bg-deep: #001233;         /* PRUSSIAN BLUE 3: deep-space scenes, map backgrounds, game stages */
+  --color-bg-inset: #001845;        /* PRUSSIAN BLUE 2: inset rows, wells, chips, option controls */
+  --color-surface-dark: #002855;    /* PRUSSIAN BLUE (deep): elevated dark surfaces, toasts */
+
+  /* Borders */
+  --color-border: #415a77;          /* DUSK BLUE: standard borders and dividers */
+  --color-border-active: #0466c8;   /* SMART BLUE: active and selected borders */
+  --color-border-subtle: #1b263b;   /* PRUSSIAN BLUE: quiet dividers on the page background */
+
+  /* Text */
+  --color-text-primary: #fffffc;    /* PORCELAIN: main headings, critical text, HUD */
+  --color-text-secondary: #e0e1dd;  /* ALABASTER GREY: body text and readable secondary content */
+  --color-text-muted: #778da9;      /* DUSTY DENIM: supporting text on Ink Black or inset wells (5.1:1); not on panels (4.45:1) */
+  --color-text-support: #979dac;    /* LAVENDER GREY: supporting text that may sit on panels (5.6:1) */
+  --color-text-disabled: #5c677d;   /* BLUE SLATE: disabled controls */
+
+  /* Interactive */
+  --color-primary: #0466c8;         /* SMART BLUE: primary actions and interactions */
+  --color-primary-hover: #0353a4;   /* SAPPHIRE */
+  --color-primary-active: #023e7d;  /* REGAL NAVY: pressed or active primary state */
+  --color-primary-soft: #a9def9;    /* ICY BLUE: soft blue highlights, links, section labels */
+  --color-secondary: #1a759f;       /* CERULEAN: secondary interactive states, selected controls */
+
+  /* Celestial */
+  --color-accent-cyan: #9bf6ff;     /* ELECTRIC AQUA: discovery, scanning, technology */
+  --color-accent-teal: #34a0a4;     /* TROPICAL TEAL: exploration and environmental states */
+  --color-accent-green: #76c893;    /* EMERALD: life, vegetation, positive environmental states */
+  --color-accent-mint: #d0f4de;     /* FROSTED MINT: soft environmental highlights */
+
+  /* Warm */
+  --color-accent-warm: #ffd6a5;     /* APRICOT CREAM: sunlight, warmth, engine energy, other players */
+  --color-accent-gold: #fcf6bd;     /* LEMON CHIFFON: rare discoveries, rewards, points */
+  --color-accent-bright: #fffffc;   /* PORCELAIN: exceptional highlights */
+
+  /* States */
+  --color-warning: #e27396;         /* PETAL ROUGE: warnings and attention states */
+  --color-danger: #d9564a;          /* CORAL RED: critical errors and destructive actions */
+  --color-success: #76c893;         /* EMERALD: successful actions and positive states */
+  --color-focus: #9bf6ff;           /* ELECTRIC AQUA: keyboard focus indicators */
+  --color-overlay: #001233;         /* PRUSSIAN BLUE 3: modal and overlay backgrounds */
+
+  /* ---- 47.21 component tokens ---------------------------------------------------- */
+  /* Buttons */
+  --button-primary-bg: #0466c8;
+  --button-primary-hover: #0353a4;
+  --button-primary-text: #fffffc;
+  --button-primary-line: #023e7d;
+  --button-secondary-bg: #1b263b;
+  --button-secondary-hover: #415a77;
+  --button-secondary-text: #e0e1dd;
+  --button-danger-bg: #d9564a;
+  --button-danger-hover: #e27396;
+  --button-danger-text: #001233;    /* PRUSSIAN BLUE 3 on Coral Red 4.7:1 (Porcelain would be 3.9:1) */
+  --button-disabled-bg: #1b263b;
+  --button-disabled-text: #5c677d;
+
+  /* Inputs */
+  --input-bg: #1b263b;
+  --input-border: #415a77;
+  --input-border-focus: #9bf6ff;
+  --input-text: #fffffc;
+  --input-placeholder: #979dac;     /* LAVENDER GREY: 5.6:1 on the input surface (Dusty Denim is 4.45:1) */
+
+  /* Navigation */
+  --nav-bg: #0d1b2a;
+  --nav-text: #e0e1dd;
+  --nav-text-active: #fffffc;
+  --nav-accent: #0466c8;
+
+  /* Game HUD */
+  --hud-bg: #001845;
+  --hud-border: #415a77;
+  --hud-text: #fffffc;
+  --hud-accent: #9bf6ff;
+
+  /* Discovery (always paired with a label or an icon) */
+  --discovery-common: #52b69a;      /* OCEAN MIST */
+  --discovery-uncommon: #1a759f;    /* CERULEAN */
+  --discovery-rare: #9bf6ff;        /* ELECTRIC AQUA */
+  --discovery-exceptional: #fcf6bd; /* LEMON CHIFFON */
+
+  /* Planet / environment */
+  --planet-water: #168aad;
+  --planet-ocean: #52b69a;
+  --planet-vegetation: #76c893;
+  --planet-foliage-light: #b5e48c;
+  --planet-ice: #a9def9;
+  --planet-sand: #ffd6a5;
+  --planet-sunset: #e27396;
+
+  /* Links and selected controls */
+  --link-text: #a9def9;
+  --link-hover: #e0e1dd;
+  --control-selected-bg: #1a759f;
+  --control-selected-text: #fffffc;
+  --control-selected-border: #a9def9;
+
+  /* Typography: two families only. Pixel display for the game voice, one typewriter face
+     (Courier Prime) for reading. --font-mono is kept as a token name for data and numerals and
+     resolves to the same typewriter face, so no third family is ever loaded. */
+  --font-display: var(--font-pixel), 'Courier New', monospace;
+  --font-body: var(--font-typewriter), 'Courier New', Courier, monospace;
+  --font-mono: var(--font-typewriter), 'Courier New', Courier, monospace;
+
+  --ui-scale: 1;
+  --radius: 0px;
+  --cut: 4px;
+  --shadow: 3px 3px 0 0 var(--color-bg-primary);
+  --content-w: 1120px;
+  --nav-h: 64px;
+  --motion: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion: 0; }
+}
+html[data-motion='off'] { --motion: 0; }
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  font-size: calc(16px * var(--ui-scale));
+  -webkit-text-size-adjust: 100%;
+  background: var(--color-bg-primary);
+  color-scheme: dark;
+  scrollbar-color: var(--color-border) var(--color-bg-secondary);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-primary);
+  /* very sparse pixel star field, drawn with CSS so it stays crisp at any scale */
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, rgba(255, 255, 252, 0.35) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 140px 90px, rgba(255, 255, 252, 0.22) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 260px 40px, rgba(255, 255, 252, 0.28) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 80px 200px, rgba(255, 255, 252, 0.18) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 330px 160px, rgba(255, 255, 252, 0.3) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 200px 250px, rgba(253, 255, 182, 0.25) 50%, transparent 51%);
+  background-size: 380px 300px;
+  image-rendering: pixelated;
+}
+
+img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+a { color: var(--link-text); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:hover { color: var(--link-hover); }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.75em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+h1, h2, h3 { color: var(--color-text-primary); } /* 47.21 main headings: Porcelain */
+h1 { font-size: clamp(1.85rem, 1.5rem + 2.2vw, 3rem); font-weight: 600; }
+h2 { font-size: clamp(1.4rem, 1.2rem + 1.2vw, 2rem); }
+h3 { font-size: 1.2rem; }
+h4 { font-size: 1.05rem; color: var(--color-text-support); }
+p { margin: 0 0 1em; max-width: 68ch; }
+small, .small { font-size: 0.875rem; }
+code, kbd, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+kbd {
+  display: inline-block; min-width: 1.6em; padding: 0 0.35em; text-align: center;
+  border: 2px solid var(--color-border); border-bottom-width: 4px; background: var(--color-bg-inset);
+  font-size: 0.8em; line-height: 1.5; color: var(--color-text-secondary);
+}
+
+:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; } /* 47.21 --color-focus: Electric Aqua, 14:1 on the page, 4.6:1 on Smart Blue */
+::selection { background: var(--color-primary); color: var(--button-primary-text); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute; left: 8px; top: -60px; z-index: 100;
+  padding: 10px 14px; background: var(--color-primary-soft); color: var(--color-bg-primary);
+  font-family: var(--font-display); font-size: 0.95rem; text-transform: uppercase;
+}
+.skip-link:focus { top: 8px; }
+
+/* ------------------------------------------------------------ layout helpers */
+.wrap { width: min(var(--content-w), 100% - 2rem); margin-inline: auto; }
+.wrap-narrow { width: min(760px, 100% - 2rem); margin-inline: auto; }
+.section { padding-block: clamp(3rem, 6vw, 5.5rem); }
+.section + .section { border-top: 2px solid var(--color-border-subtle); }
+.stack > * + * { margin-top: 1rem; }
+.grid-2 { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); align-items: start; }
+.grid-3 { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.between { justify-content: space-between; }
+.eyebrow {
+  font-family: var(--font-display); font-size: 0.9rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--color-primary-soft); margin-bottom: 1rem;
+}
+.lede { font-size: 1.125rem; color: var(--color-text-support); }
+.muted { color: var(--color-text-support); } /* lives inside panels: Lavender Grey keeps 5.6:1 on Prussian Blue (47.18) */
+.dim { color: var(--color-text-support); }
+/* semantic text helpers (47.21 state semantics): gold = rare, rewarding or important; warm = other players and
+   engine energy; green = positive; red = attention. Text errors use --color-warning (Petal Rouge, 5.1:1 on panels);
+   --color-danger (Coral Red, 3.9:1) is reserved for fills and borders. */
+.amber { color: var(--color-accent-gold); }
+.warm { color: var(--color-accent-warm); }
+.green { color: var(--color-success); }
+.sky { color: var(--color-primary-soft); }
+.red { color: var(--color-warning); }
+.upper { text-transform: uppercase; letter-spacing: 0.04em; }
+.display { font-family: var(--font-display); font-weight: 500; text-transform: uppercase; }
+.display-xs { font-family: var(--font-display); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.display-sm { font-family: var(--font-display); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.nowrap { white-space: nowrap; }
+
+/* pixel-cut corners shared by buttons, panels and inputs */
+.cut {
+  clip-path: polygon(
+    var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut)
+  );
+}
+
+/* pixel rule: a dotted 2px line */
+.px-rule {
+  height: 2px; border: 0; margin: 2rem 0;
+  background: repeating-linear-gradient(90deg, var(--color-border) 0 6px, transparent 6px 10px);
+}
+
+/* ------------------------------------------------------------ motion */
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pulse-soft { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+/* Reveal: content is visible by default (works without JS). After hydration, elements still below
+   the fold are hidden and rise in once when scrolled to. Off under reduced motion. */
+.reveal-pending { opacity: 0; transform: translateY(8px); }
+.reveal-in { animation: rise 0.5s ease both; }
+html[data-motion='off'] .reveal-pending { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal-pending { opacity: 1; transform: none; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+html[data-motion='off'] *, html[data-motion='off'] *::before, html[data-motion='off'] *::after {
+  animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important;
+}
+
+.cursor::after { content: '_'; animation: blink 1s steps(1) infinite; color: var(--color-primary-soft); }
+
+/* ------------------------------------------------------------ forms */
+.field { display: grid; gap: 0.4rem; }
+.field label { font-family: var(--font-display); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-support); }
+.field .hint { font-size: 0.8rem; color: var(--color-text-support); }
+.input {
+  width: 100%; font: inherit; color: var(--input-text); background: var(--input-bg);
+  border: 2px solid var(--input-border); padding: 0.7rem 0.85rem; border-radius: 0;
+  box-shadow: inset 2px 2px 0 0 var(--color-bg-primary);
+}
+.input:focus { outline: none; border-color: var(--input-border-focus); }
+.input::placeholder { color: var(--input-placeholder); }
+.input[aria-invalid='true'] { border-color: var(--color-danger); }
+select.input { appearance: none; }
+/* error and success blocks: colour plus a border, a heading and text (never colour alone) */
+.form-error {
+  border: 2px solid var(--color-danger); background: rgba(217, 86, 74, 0.12); padding: 0.75rem 1rem; color: var(--color-text-secondary);
+}
+.form-error strong, .form-ok strong { font-family: var(--font-display); font-size: 0.95rem; display: block; margin-bottom: 0.25rem; text-transform: uppercase; }
+.form-ok { border: 2px solid var(--color-success); background: rgba(118, 200, 147, 0.12); padding: 0.75rem 1rem; }
+
+/* ------------------------------------------------------------ tables */
+.table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.table th, .table td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 2px solid var(--color-border-subtle); vertical-align: top; }
+.table th { font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-support); }
+.table td.num, .table th.num { text-align: right; font-family: var(--font-display); font-size: 1rem; font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------ pixel canvas responsiveness */
+.pixel-fit { display: block; width: 100%; height: auto; max-width: 100%; }
