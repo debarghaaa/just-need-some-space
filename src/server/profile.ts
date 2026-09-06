@@ -2,7 +2,10 @@ import 'server-only';
 
 import { cache } from 'react';
 
-import { getServerSupabase, getSessionUser } from '@/lib/supabase/server';
+import {
+  getServiceSupabase,
+  getSessionUser,
+} from '@/lib/supabase/server';
 
 import {
   rocketFromRow,
@@ -51,9 +54,7 @@ export interface Viewer {
   rocketConfig: RocketConfig;
   suit: SuitConfig;
 
-  /**
-   * true for accounts created without an email (guest explorers)
-   */
+  /** true for accounts created without an email (guest explorers) */
   isGuest: boolean;
 }
 
@@ -66,7 +67,9 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
 
   if (!user) return null;
 
-  const supabase = await getServerSupabase();
+  // Use the service-role client here because this server-side function
+  // needs to read the player's profile despite the public client's RLS.
+  const supabase = getServiceSupabase();
 
   if (!supabase) return null;
 
@@ -76,9 +79,6 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     .eq('user_id', user.id)
     .maybeSingle();
 
-  // TEMPORARY DEBUG LOG:
-  // This tells us whether the deployed server can actually see the
-  // profile and, specifically, whether onboarded_at is present.
   console.log('PROFILE CHECK:', {
     userId: user.id,
     profile,
@@ -88,7 +88,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   let rocket: RocketRow | null = null;
 
   if (profile?.current_rocket_id) {
-    const { data } = await supabase
+    const { data: rocketData } = await supabase
       .from('rockets')
       .select(
         'id,name,body,engine,fins,color,accent,decal,engine_color,fin_color,decal_color,updated_at'
@@ -96,7 +96,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
       .eq('id', profile.current_rocket_id)
       .maybeSingle();
 
-    rocket = (data as RocketRow | null) ?? null;
+    rocket = (rocketData as RocketRow | null) ?? null;
   }
 
   return {
