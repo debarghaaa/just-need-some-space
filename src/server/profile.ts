@@ -1,7 +1,15 @@
 import 'server-only';
+
 import { cache } from 'react';
+
 import { getServerSupabase, getSessionUser } from '@/lib/supabase/server';
-import { rocketFromRow, suitFromRow, type RocketConfig, type SuitConfig } from '@/game/rockets';
+
+import {
+  rocketFromRow,
+  suitFromRow,
+  type RocketConfig,
+  type SuitConfig,
+} from '@/game/rockets';
 
 export interface Profile {
   user_id: string;
@@ -49,15 +57,39 @@ export interface Viewer {
 /** Signed-in user + profile + current rocket for the current request (memoised per request). */
 export const getViewer = cache(async (): Promise<Viewer | null> => {
   const user = await getSessionUser();
+
   if (!user) return null;
+
   const supabase = await getServerSupabase();
+
   if (!supabase) return null;
-  const { data: profile } = await supabase.from('player_profiles').select('*').eq('user_id', user.id).maybeSingle();
+
+  const { data: profile, error: profileError } = await supabase
+    .from('player_profiles')
+    .select('*')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  console.log('PROFILE CHECK:', {
+    userId: user.id,
+    profile,
+    profileError,
+  });
+
   let rocket: RocketRow | null = null;
+
   if (profile?.current_rocket_id) {
-    const { data } = await supabase.from('rockets').select('id,name,body,engine,fins,color,accent,decal,engine_color,fin_color,decal_color,updated_at').eq('id', profile.current_rocket_id).maybeSingle();
+    const { data } = await supabase
+      .from('rockets')
+      .select(
+        'id,name,body,engine,fins,color,accent,decal,engine_color,fin_color,decal_color,updated_at'
+      )
+      .eq('id', profile.current_rocket_id)
+      .maybeSingle();
+
     rocket = (data as RocketRow | null) ?? null;
   }
+
   return {
     userId: user.id,
     email: user.email ?? null,
@@ -65,6 +97,8 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     rocket,
     rocketConfig: rocketFromRow(rocket),
     suit: suitFromRow(profile as Profile | null),
-    isGuest: Boolean((user as { is_anonymous?: boolean }).is_anonymous) || !user.email,
+    isGuest:
+      Boolean((user as { is_anonymous?: boolean }).is_anonymous) ||
+      !user.email,
   };
 });
