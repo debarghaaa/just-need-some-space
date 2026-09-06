@@ -20,7 +20,7 @@ const W = 640;
 const H = 420;
 
 export function SystemMap(props: { systemId: string; systemIndex: number; seed: string; visited: boolean; discovered: string[]; firstFound: Record<string, { username: string; at: string }>; rocket: RocketConfig; username: string; displayName?: string; userId: string }) {
-  const { systemId, systemIndex, seed, discovered, firstFound, rocket, username } = props;
+  const { systemId, systemIndex, seed, firstFound, rocket, username } = props;
   const displayName = props.displayName || username;
   const router = useRouter();
   const toast = useToast();
@@ -28,23 +28,13 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
   const system = useMemo(() => generateSystem(seed, systemIndex), [seed, systemIndex]);
   const [selected, setSelected] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  // Keep discoveries in local state so a successful landing updates this screen immediately.
-  const [discoveredIds, setDiscoveredIds] = useState<string[]>(discovered);
+  // Keep discovery state in the browser so the UI changes immediately after the API succeeds.
+  // The server-provided value is still the authoritative initial state on every full load.
+  const [discoveredState, setDiscoveredState] = useState<Set<string>>(() => new Set(props.discovered));
   const [firstFoundState, setFirstFoundState] = useState(firstFound);
-  const discoveredSet = useMemo(() => new Set(discoveredIds), [discoveredIds]);
+  const discoveredSet = discoveredState;
+  const firstFoundMap = firstFoundState;
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    setDiscoveredIds((current) => {
-      const next = new Set(current);
-      for (const id of discovered) next.add(id);
-      return [...next];
-    });
-  }, [discovered]);
-
-  useEffect(() => {
-    setFirstFoundState(firstFound);
-  }, [firstFound]);
 
   // My rocket sits on the orbit of the selected planet (or parked near the star).
   const posRef = useRef({ x: 0, y: 0, facing: 1 });
@@ -184,7 +174,7 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
   const sel = system.planets.find((p) => p.id === selected) ?? null;
 
   async function land() {
-    if (!sel) return;
+    if (!sel || busy) return;
     setBusy(true);
     sfx('land');
     let res: Response;
@@ -204,18 +194,22 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
     }
     const data = (await res.json()) as { points_awarded: number; newly_discovered: boolean; first_find: boolean };
     if (data.newly_discovered) {
-      // Optimistically update the map before navigation/refresh so the discovery is
-      // reflected immediately when this view remains mounted or is revisited.
-      setDiscoveredIds((current) => current.includes(sel.id) ? current : [...current, sel.id]);
+      // Reflect the discovery immediately without waiting for a server component refresh.
+      setDiscoveredState((prev) => {
+        const next = new Set(prev);
+        next.add(sel.id);
+        return next;
+      });
       if (data.first_find) {
-        setFirstFoundState((current) => ({
-          ...current,
+        setFirstFoundState((prev) => ({
+          ...prev,
           [sel.id]: { username, at: new Date().toISOString() },
         }));
       }
       sfx('found');
       toast({ head: `${COPY.planetFound.head} +${data.points_awarded}`, sub: data.first_find ? 'Nobody had logged this world before you.' : COPY.planetFound.sub, tone: 'ok' });
     }
+    // Refresh the server component payload as well, so returning to this route cannot restore stale discovery data.
     router.refresh();
     router.push(`/planet/${idToSlug(sel.id)}`);
   }
@@ -276,8 +270,8 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
               ) : (
                 <p className="small dim" style={{ margin: 0 }}>Orbit scan shows a world with {sel.sites.length} points of interest and {sel.nodes.length} resource readings. Land to find out what it is.</p>
               )}
-              {firstFoundState[sel.id] ? (
-                <p className="small muted" style={{ margin: 0 }}>First discovered by <span className="amber">{firstFoundState[sel.id].username}</span> on {new Date(firstFoundState[sel.id].at).toLocaleDateString()}.</p>
+              {firstFoundMap[sel.id] ? (
+                <p className="small muted" style={{ margin: 0 }}>First discovered by <span className="amber">{firstFoundMap[sel.id].username}</span> on {new Date(firstFoundMap[sel.id].at).toLocaleDateString()}.</p>
               ) : (
                 <p className="small muted" style={{ margin: 0 }}>Nobody has logged this planet yet.</p>
               )}
