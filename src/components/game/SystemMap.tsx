@@ -28,12 +28,8 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
   const system = useMemo(() => generateSystem(seed, systemIndex), [seed, systemIndex]);
   const [selected, setSelected] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  // Keep discovery state in the browser so the UI changes immediately after the API succeeds.
-  // The server-provided value is still the authoritative initial state on every full load.
   const [discoveredState, setDiscoveredState] = useState<Set<string>>(() => new Set(props.discovered));
-  const [firstFoundState, setFirstFoundState] = useState(firstFound);
   const discoveredSet = discoveredState;
-  const firstFoundMap = firstFoundState;
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // My rocket sits on the orbit of the selected planet (or parked near the star).
@@ -194,24 +190,19 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
     }
     const data = (await res.json()) as { points_awarded: number; newly_discovered: boolean; first_find: boolean };
     if (data.newly_discovered) {
-      // Reflect the discovery immediately without waiting for a server component refresh.
-      setDiscoveredState((prev) => {
-        const next = new Set(prev);
+      setDiscoveredState((current) => {
+        const next = new Set(current);
         next.add(sel.id);
         return next;
       });
-      if (data.first_find) {
-        setFirstFoundState((prev) => ({
-          ...prev,
-          [sel.id]: { username, at: new Date().toISOString() },
-        }));
+      if (data.points_awarded > 0) {
+        window.dispatchEvent(new CustomEvent('jnss:points-awarded', { detail: { points: data.points_awarded } }));
       }
       sfx('found');
       toast({ head: `${COPY.planetFound.head} +${data.points_awarded}`, sub: data.first_find ? 'Nobody had logged this world before you.' : COPY.planetFound.sub, tone: 'ok' });
     }
-    // Refresh the server component payload as well, so returning to this route cannot restore stale discovery data.
-    router.refresh();
-    router.push(`/planet/${idToSlug(sel.id)}`);
+    // A full navigation guarantees the newly written discovery is read fresh by the server page.
+    window.location.assign(`/planet/${idToSlug(sel.id)}`);
   }
 
   return (
@@ -270,8 +261,8 @@ export function SystemMap(props: { systemId: string; systemIndex: number; seed: 
               ) : (
                 <p className="small dim" style={{ margin: 0 }}>Orbit scan shows a world with {sel.sites.length} points of interest and {sel.nodes.length} resource readings. Land to find out what it is.</p>
               )}
-              {firstFoundMap[sel.id] ? (
-                <p className="small muted" style={{ margin: 0 }}>First discovered by <span className="amber">{firstFoundMap[sel.id].username}</span> on {new Date(firstFoundMap[sel.id].at).toLocaleDateString()}.</p>
+              {firstFound[sel.id] ? (
+                <p className="small muted" style={{ margin: 0 }}>First discovered by <span className="amber">{firstFound[sel.id].username}</span> on {new Date(firstFound[sel.id].at).toLocaleDateString()}.</p>
               ) : (
                 <p className="small muted" style={{ margin: 0 }}>Nobody has logged this planet yet.</p>
               )}

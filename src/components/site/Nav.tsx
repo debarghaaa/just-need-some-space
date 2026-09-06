@@ -37,7 +37,25 @@ function isCurrent(path: string, href: string): boolean {
 export function Nav({ user, backendReady }: { user: NavUser | null; backendReady: boolean }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  const [livePoints, setLivePoints] = useState(user?.points ?? 0);
   useEffect(() => setOpen(false), [path]);
+
+  // Keep the global points counter in sync immediately after a game action.
+  // The server value remains authoritative; this event only makes the UI update without a refresh.
+  useEffect(() => {
+    setLivePoints(user?.points ?? 0);
+  }, [user?.points]);
+
+  useEffect(() => {
+    const onPoints = (event: Event) => {
+      const points = (event as CustomEvent<{ points?: number }>).detail?.points;
+      if (!Number.isFinite(points) || !points || points <= 0) return;
+      setLivePoints((current) => current + Math.floor(points));
+    };
+    window.addEventListener('jnss:points-awarded', onPoints);
+    return () => window.removeEventListener('jnss:points-awarded', onPoints);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
@@ -59,7 +77,7 @@ export function Nav({ user, backendReady }: { user: NavUser | null; backendReady
   const authControls = user ? (
     <>
       <Link href="/profile#points" className="nav-points" title="Your points, computed server-side">
-        {user.points.toLocaleString()} pts
+        {livePoints.toLocaleString()} pts
       </Link>
       <LinkButton href="/settings" variant="ghost" size="sm" aria-label="Settings">
         <PixelIcon name="gear" size={12} /> {user.username}{user.isGuest ? <span className="tag tag-guest" style={{ marginLeft: '0.25rem' }}>Guest</span> : null}

@@ -233,8 +233,11 @@ export function PlanetExplorer(props: { seed: string; systemIndex: number; plane
         setScanned((s) => new Set(s).add(target.site.id));
         if (r.newly_discovered) {
           pushLog(`SCANNED: ${target.site.name.toUpperCase()}`, `${RARITY_LABEL[target.site.rarity]} ${target.site.kind}. +${r.points_awarded} points.`);
+          if (r.points_awarded > 0) window.dispatchEvent(new CustomEvent('jnss:points-awarded', { detail: { points: r.points_awarded } }));
           toast({ head: `+${r.points_awarded} SCAN`, sub: target.site.name, tone: 'ok', ttl: 2500 });
-          if (r.full_scan_points > 0) { sfx('found'); toast({ head: `PLANET FULLY SCANNED. +${r.full_scan_points}`, sub: 'Every point of interest logged. Nothing left to misunderstand.', tone: 'ok' }); pushLog('FULLY SCANNED.', `+${r.full_scan_points} points.`); }
+          if (r.full_scan_points > 0) {
+            window.dispatchEvent(new CustomEvent('jnss:points-awarded', { detail: { points: r.full_scan_points } }));
+            sfx('found'); toast({ head: `PLANET FULLY SCANNED. +${r.full_scan_points}`, sub: 'Every point of interest logged. Nothing left to misunderstand.', tone: 'ok' }); pushLog('FULLY SCANNED.', `+${r.full_scan_points} points.`); }
         } else pushLog('ALREADY SCANNED.', `${target.site.name}. Still there. Still odd.`);
       } else if (target.kind === 'node') {
         const r = (await post({ action: 'collect', planetId: planet.id, nodeIndex: target.node.index })) as { points_awarded: number; collected: boolean; new_resource: boolean };
@@ -243,6 +246,7 @@ export function PlanetExplorer(props: { seed: string; systemIndex: number; plane
           setCollected((s) => new Set(s).add(target.node.id));
           setTarget(null);
           pushLog(`COLLECTED: ${target.node.resource.name.toUpperCase()} x${target.node.amount}`, `${RARITY_LABEL[target.node.resource.tier]}. +${r.points_awarded} points.${r.new_resource ? ' New codex entry.' : ''}`);
+          if (r.points_awarded > 0) window.dispatchEvent(new CustomEvent('jnss:points-awarded', { detail: { points: r.points_awarded } }));
           toast({ head: `+${r.points_awarded} ${target.node.resource.name.toUpperCase()}`, sub: r.new_resource ? 'First time you have seen this. Added to the codex.' : `x${target.node.amount} added to inventory.`, tone: 'ok', ttl: 2500 });
         } else pushLog('NOTHING LEFT HERE.', 'You already took it.');
       }
