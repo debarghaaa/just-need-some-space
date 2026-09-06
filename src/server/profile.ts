@@ -50,11 +50,17 @@ export interface Viewer {
   rocket: RocketRow | null;
   rocketConfig: RocketConfig;
   suit: SuitConfig;
-  /** true for accounts created without an email (guest explorers) */
+
+  /**
+   * true for accounts created without an email (guest explorers)
+   */
   isGuest: boolean;
 }
 
-/** Signed-in user + profile + current rocket for the current request (memoised per request). */
+/**
+ * Signed-in user + profile + current rocket for the current request
+ * (memoised per request).
+ */
 export const getViewer = cache(async (): Promise<Viewer | null> => {
   const user = await getSessionUser();
 
@@ -70,6 +76,9 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     .eq('user_id', user.id)
     .maybeSingle();
 
+  // TEMPORARY DEBUG LOG:
+  // This tells us whether the deployed server can actually see the
+  // profile and, specifically, whether onboarded_at is present.
   console.log('PROFILE CHECK:', {
     userId: user.id,
     profile,
